@@ -13,7 +13,11 @@ const origCreateElement = React.createElement;
     return vdom;
 };
 
+let inited = false;
 export function init() {
+    if (typeof window !== 'object') return;
+    if (inited) return;
+    inited = true;
     const select = document.createElement('div');
     select.style.cssText = `
 		position: absolute;
@@ -37,13 +41,20 @@ export function init() {
 		background: url(#bridgeCursorIcon);
 	`;
     div.innerHTML = svg;
-    document.body.appendChild(div);
+    // document.body.appendChild(div);
     document.body.appendChild(select);
     // let isSelecting = false;
     div.addEventListener('mouseup', e => {
         e.stopPropagation();
     });
-    div.addEventListener('click', () => {
+    div.addEventListener('click', activate);
+    document.body.addEventListener('keypress', e => {
+        if (e.key === 'i' && (e.metaKey || e.ctrlKey)) {
+            activate();
+        }
+    });
+
+    function activate() {
         // isSelecting = true;
         select.style.display = 'block';
         let activeEl: Element | undefined;
@@ -75,7 +86,7 @@ export function init() {
         }
         document.body.addEventListener('mousemove', mouseMove);
         document.body.addEventListener('mouseup', mouseUp, { once: true });
-    });
+    }
 }
 
 const svg = `
@@ -101,3 +112,4 @@ const svg = `
 		C130.81,63.037,133.352,64.005,135.893,64.005z"/>
 </svg>
 `;
+init();

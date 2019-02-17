@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
 const fileNameProp = '__filename';
+const packageName = 'reveal-in-vscode';
 
 export default function(program: ts.Program, pluginOptions: { productionEnv: string }) {
     const productionEnv = new RegExp('^' + (pluginOptions.productionEnv || 'production') + '$');
@@ -65,6 +66,12 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
             }
             const sf = ts.visitEachChild(sourceFile, visitor, ctx);
             if (fileNameIdent) {
+                const imprt = ts.createImportDeclaration(
+                    undefined,
+                    undefined,
+                    undefined,
+                    ts.createLiteral(packageName)
+                );
                 // const imprt = ts.createImportDeclaration(
                 //     undefined,
                 //     undefined,
@@ -80,7 +87,7 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
                         ts.createVariableDeclaration(fileNameIdent, undefined, ts.createLiteral(sf.fileName)),
                     ])
                 );
-                const statements = [fileNameVar, ...sf.statements];
+                const statements = [imprt, fileNameVar, ...sf.statements];
                 return ts.updateSourceFileNode(
                     sf,
                     statements,

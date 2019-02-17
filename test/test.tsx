@@ -2,7 +2,6 @@ import { init } from '../src/index';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-init();
 
 function App() {
     return (
