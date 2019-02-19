@@ -5,7 +5,7 @@
     "main": "dist/index.js",
     "types": "dist/index",
     "scripts": {
-        "build": "rm -r dist && tsc -p src",
+        "build": "rm -rf dist && tsc -p src",
         "prepublish": "npm run build",
         "test": "npx ttsc -p test"
     },
