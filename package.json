@@ -1,12 +1,11 @@
 {
     "name": "reveal-in-vscode",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "",
     "main": "dist/index.js",
-    "types": "dist/index",
     "scripts": {
         "build": "rm -rf dist && tsc -p src",
-        "prepublish": "npm run build",
+        "prepublish": "rm -rf dist && npm run build",
         "test": "npx ttsc -p test"
     },
     "keywords": [],

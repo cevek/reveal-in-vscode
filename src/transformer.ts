@@ -1,12 +1,12 @@
 import * as ts from 'typescript';
-const fileNameProp = '__filename';
+const fileNameProp = Names.filenameProp;
 const packageName = 'reveal-in-vscode';
 
-export default function(program: ts.Program, pluginOptions: { productionEnv: string }) {
-    const productionEnv = new RegExp('^' + (pluginOptions.productionEnv || 'production') + '$');
+export default function(program: ts.Program, pluginOptions: {}) {
+    const isProduction = process.env.NODE_ENV === 'production';
     return (ctx: ts.TransformationContext) => {
         return (sourceFile: ts.SourceFile) => {
-            if (productionEnv.test(process.env.NODE_ENV || '')) return sourceFile;
+            if (isProduction) return sourceFile;
             if (sourceFile.isDeclarationFile) return sourceFile;
             if (sourceFile.languageVariant !== ts.LanguageVariant.JSX) return sourceFile;
             let fileNameIdent: ts.Identifier | undefined;
@@ -24,9 +24,9 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
                             ts.createBinary(
                                 fileNameIdent,
                                 ts.SyntaxKind.PlusToken,
-                                ts.createLiteral(':' + (pos.line + 1) + ':' + (pos.character + 1))
-                            )
-                        )
+                                ts.createLiteral(':' + (pos.line + 1) + ':' + (pos.character + 1)),
+                            ),
+                        ),
                     ),
                 ]);
             }
@@ -40,13 +40,13 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
                                 open,
                                 open.tagName,
                                 open.typeArguments,
-                                add(node, open.attributes)
+                                add(node, open.attributes),
                             ),
                             node.children,
-                            node.closingElement
+                            node.closingElement,
                         ),
                         visitor,
-                        ctx
+                        ctx,
                     );
                 }
                 if (ts.isJsxSelfClosingElement(node)) {
@@ -55,10 +55,10 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
                             node,
                             node.tagName,
                             node.typeArguments,
-                            add(node, node.attributes)
+                            add(node, node.attributes),
                         ),
                         visitor,
-                        ctx
+                        ctx,
                     );
                 }
 
@@ -70,7 +70,7 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
                     undefined,
                     undefined,
                     undefined,
-                    ts.createLiteral(packageName)
+                    ts.createLiteral(packageName),
                 );
                 // const imprt = ts.createImportDeclaration(
                 //     undefined,
@@ -85,7 +85,7 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
                     undefined,
                     ts.createVariableDeclarationList([
                         ts.createVariableDeclaration(fileNameIdent, undefined, ts.createLiteral(sf.fileName)),
-                    ])
+                    ]),
                 );
                 const statements = [imprt, fileNameVar, ...sf.statements];
                 return ts.updateSourceFileNode(
@@ -95,7 +95,7 @@ export default function(program: ts.Program, pluginOptions: { productionEnv: str
                     sf.referencedFiles,
                     sf.typeReferenceDirectives,
                     sf.hasNoDefaultLib,
-                    sf.libReferenceDirectives
+                    sf.libReferenceDirectives,
                 );
             }
             return sf;

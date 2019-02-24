@@ -1,12 +1,12 @@
-const React = require('react');
+import * as React from 'react';
 const weakMap = new WeakMap();
 // console.log(weakMap);
 const origCreateElement = React.createElement;
 (React as any).createElement = function(tag: any, props: any, ...children: any) {
     let fileName;
     if (props !== null && typeof props === 'object') {
-        fileName = props.__filename;
-        props.__filename = undefined;
+        fileName = props[Names.filenameProp];
+        props[Names.filenameProp] = undefined;
     }
     const vdom = origCreateElement(tag, props, ...children);
     weakMap.set(vdom.props, fileName);
